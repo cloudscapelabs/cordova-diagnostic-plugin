@@ -187,6 +187,21 @@ var Diagnostic = (function(){
     };
 
     /**
+     * Opens battery optimization settings for this app.
+     * Note for this to do anything you must request the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission in your app manifest.
+     * @param {Function} successCallback - The callback which will be called when switch to battery optimization settings is successful.
+     * @param {Function} errorCallback - The callback which will be called when switch to battery optimization settings encounters an error.
+     * This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic.switchToBatteryOptimizationSettings = function(successCallback, errorCallback) {
+        return cordova.exec(successCallback,
+            errorCallback,
+            'Diagnostic',
+            'switchToBatteryOptimizationSettings',
+            []);
+    };
+
+    /**
      * Returns the current authorisation status for a given permission.
      * Note: this is intended for Android 6 / API 23 and above. Calling on Android 5 / API 22 and below will always return GRANTED status as permissions are already granted at installation time.
      *

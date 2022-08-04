@@ -258,6 +258,9 @@ public class Diagnostic extends CordovaPlugin{
             } else if (action.equals("switchToSettings")){
                 switchToAppSettings();
                 callbackContext.success();
+            } else if (action.equals("switchToBatteryOptimizationSettings")){
+                switchToBatteryOptimizationSettings();
+                callbackContext.success();
             } else if (action.equals("switchToMobileDataSettings")){
                 switchToMobileDataSettings();
                 callbackContext.success();
@@ -329,6 +332,14 @@ public class Diagnostic extends CordovaPlugin{
         cordova.getActivity().startActivity(appIntent);
     }
 
+
+    public void switchToBatteryOptimizationSettings() {
+        logDebug("Switch to battery optimization settings Settings");
+        Intent appIntent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+        Uri uri = Uri.fromParts("package", cordova.getActivity().getPackageName(), null);
+        appIntent.setData(uri);
+        cordova.getActivity().startActivity(appIntent);
+    }
 
     public void switchToMobileDataSettings() {
         logDebug("Switch to Mobile Data Settings");
