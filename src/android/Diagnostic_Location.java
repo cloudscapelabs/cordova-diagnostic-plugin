@@ -33,6 +33,7 @@ import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.PowerManager;
 import android.util.Log;
 
 import android.content.Context;
@@ -78,6 +79,7 @@ public class Diagnostic_Location extends CordovaPlugin{
 
     public static LocationManager locationManager;
 
+    public static PowerManager powerManager;
     /**
      * Current Cordova callback context (on this thread)
      */
@@ -111,6 +113,12 @@ public class Diagnostic_Location extends CordovaPlugin{
             locationManager = (LocationManager) this.cordova.getActivity().getSystemService(Context.LOCATION_SERVICE);
         }catch(Exception e){
             diagnostic.logWarning("Unable to register Location Provider Change receiver: " + e.getMessage());
+        }
+
+        try {
+            powerManager = (PowerManager) diagnostic.applicationContext.getSystemService(Context.POWER_SERVICE);
+        }catch(Exception e){
+            diagnostic.logWarning("Unable to get power manager: " + e.getMessage());
         }
 
         try {
@@ -154,6 +162,8 @@ public class Diagnostic_Location extends CordovaPlugin{
                 callbackContext.success(isGpsLocationEnabled() || isNetworkLocationEnabled() ? 1 : 0);
             } else if(action.equals("isGpsLocationAvailable")) {
                 callbackContext.success(isGpsLocationAvailable() ? 1 : 0);
+            } else if(action.equals("isIgnoringBatteryOptimizations")) {
+                callbackContext.success(isIgnoringBatteryOptimizations() ? 1 : 0);
             } else if(action.equals("isNetworkLocationAvailable")) {
                 callbackContext.success(isNetworkLocationAvailable() ? 1 : 0);
             } else if(action.equals("isGpsLocationEnabled")) {
@@ -185,6 +195,12 @@ public class Diagnostic_Location extends CordovaPlugin{
         int mode = getLocationMode();
         boolean result = (mode == 3 || mode == 1);
         diagnostic.logDebug("GPS location setting enabled: " + result);
+        return result;
+    }
+
+    public boolean isIgnoringBatteryOptimizations() throws Exception {
+        boolean result = powerManager.isIgnoringBatteryOptimizations(cordova.getActivity().getPackageName());
+        diagnostic.logDebug("Is ignoring battery optimizations: " + result);
         return result;
     }
 

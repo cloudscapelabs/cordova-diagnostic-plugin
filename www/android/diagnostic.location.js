@@ -153,6 +153,22 @@ var Diagnostic_Location = (function(){
     };
 
     /**
+     * Checks if the current application is ignoring battery optimizations.
+     *
+     * @param {Function} successCallback -  The callback which will be called when the operation is successful.
+     * This callback function is passed a single boolean parameter which is TRUE if application is ignoring battery optimizations.
+     * @param {Function} errorCallback -  The callback which will be called when the operation encounters an error.
+     *  This callback function is passed a single string parameter containing the error message.
+     */
+    Diagnostic_Location.isIgnoringBatteryOptimizations = function(successCallback, errorCallback) {
+        return cordova.exec(Diagnostic._ensureBoolean(successCallback),
+            errorCallback,
+            'Diagnostic_Location',
+            'isIgnoringBatteryOptimizations',
+            []);
+    };
+
+    /**
      * Checks if low-accuracy locations are available to the app from network triangulation/WiFi access points.
      * Returns true if Location mode is enabled and is set to "Battery saving" or "High accuracy"
      * AND if the app is authorised to use location.
