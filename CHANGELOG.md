@@ -1,10 +1,29 @@
 # CHANGELOG
 
+**v7.1.2**
+* (Android) fix: Data roaming setting not available on API 32+
+* (Android) Support new media storage permissions on Android 13 / API 33.
+  * Resolves [#488](https://github.com/dpa99c/cordova-diagnostic-plugin/issues/488).
+* (ios) bugfix: Check argument for Photo Library Access Level is not null before attempting to perform string compare.
+  * Resolves [#483](https://github.com/dpa99c/cordova-diagnostic-plugin/issues/483).
+* (doc) Document issue with "Only this time" option in run-time permissions on Android 11+.
+  * Resolves [#486](https://github.com/dpa99c/cordova-diagnostic-plugin/issues/486).
+
+
+**v7.1.1**
+* (Android, iOS) feat: Add `isMobileDataEnabled()` to core module.
+    * Based on PR [#478](https://github.com/dpa99c/cordova-diagnostic-plugin/pull/478)
+* (iOS) bugfix: Only allow Bluetooth permission request if not already requested.
+    * Resolves [#477](https://github.com/dpa99c/cordova-diagnostic-plugin/issues/477).
+* (iOS) bugfix: Resolve the correct authorization status after requesting camera roll authorization and granting LIMITED access.
+    * Resolves [#476](https://github.com/dpa99c/cordova-diagnostic-plugin/issues/476).
+
+
 **v7.1.0**
 * (Android, iOS) feat: add support to fetch device OS and build SDK details
 
-**v7.0.0**
 
+**v7.0.0**
 * (Android) BREAKING chore: Remove deprecated aliases `cordova.plugins.diagnostic.runtimePermission` and  `cordova.plugins.diagnostic.runtimePermissionStatus`
     - Use `cordova.plugins.diagnostic.permission` and `cordova.plugins.diagnostic.permissionStatus` instead.
 * (iOS) feat: Add support for Photo Library access levels on iOS 14+
