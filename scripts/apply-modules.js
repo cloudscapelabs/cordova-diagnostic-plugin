@@ -137,29 +137,54 @@ var getModuleEnd = function(module){
 /**********
  * Main
  **********/
+// Walk up from the starting directory to find the Cordova project containing config.xml.
+// Paths are not derived from the plugin location because scoped packages (e.g. node_modules/@scope/plugin)
+// and linked packages do not sit exactly two levels below the project.
+var findProjectPath = function(startPath){
+    var dir = startPath;
+    while(true){
+        if(fs.existsSync(path.join(dir, 'config.xml'))){
+            return dir;
+        }
+        var parent = path.dirname(dir);
+        if(parent === dir){
+            return null;
+        }
+        dir = parent;
+    }
+};
+
 var main = function() {
     try{
         fs = require('fs');
         path = require('path');
-        cwd = path.resolve();
-        pluginNodePath = cwd;
+        cwd = process.env.INIT_CWD || process.cwd();
 
-        modulesPath = path.resolve(pluginNodePath, "..");
-        projectPath = path.resolve(modulesPath, "..");
-        pluginScriptsPath = path.resolve(pluginNodePath, "scripts");
+        pluginScriptsPath = __dirname;
+        pluginNodePath = path.resolve(pluginScriptsPath, "..");
+        projectPath = findProjectPath(cwd);
 
-        logger = require(path.resolve(pluginScriptsPath, "logger.js"))(modulesPath, PLUGIN_ID);
-        et = require(path.resolve(modulesPath, "elementtree"));
-    }catch(e){
-        handleError("Failed to load dependencies. If using cordova@6 CLI, ensure this plugin is installed with the --fetch option or run 'npm install "+PLUGIN_ID+"': " + e.message);
-    }
+        if(!projectPath){
+            var message = "Could not find config.xml in or above " + cwd + "; modules preference not applied, all modules remain enabled.";
+            // npm may run postinstall before the Cordova project config exists; the explicit run must succeed.
+            if(process.env.npm_lifecycle_event === 'postinstall'){
+                console.warn(PLUGIN_NAME + " - WARNING: " + message);
+                return;
+            }
+            throw new Error(message);
+        }
 
-    try{
+        modulesPath = path.join(projectPath, "node_modules");
+        logger = require(path.join(pluginScriptsPath, "logger.js"))(projectPath, PLUGIN_ID);
+        et = require(require.resolve("elementtree", { paths: [pluginNodePath, projectPath] }));
+
         configXmlPath = path.join(projectPath, 'config.xml');
         pluginXmlPath = path.join(pluginNodePath, "plugin.xml");
         run();
+        logger.log("Applied modules preference from " + configXmlPath + " to " + pluginXmlPath);
     }catch(e){
         handleError(e.message);
+        process.exitCode = 1;
     }
 };
 

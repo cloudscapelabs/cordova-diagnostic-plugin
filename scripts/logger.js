@@ -6,7 +6,11 @@ var logger = (function(){
      * Internal properties
      *********************/
     var logger, path, minimist,
-        modulesPath, pluginId, hasColors = true, cliArgs;
+        projectPath, pluginId, hasColors = true, cliArgs;
+
+    function requireDependency(name){
+        return require(require.resolve(name, { paths: [path.resolve(__dirname, ".."), projectPath] }));
+    }
 
     function prefixMsg(msg){
         return pluginId+": "+msg;
@@ -16,19 +20,19 @@ var logger = (function(){
      * Public API
      ************/
     logger = {
-        init: function(_modulesPath, _pluginId){
+        init: function(_projectPath, _pluginId){
             pluginId = _pluginId;
-            modulesPath = _modulesPath;
+            projectPath = _projectPath;
 
             path = require('path');
 
             try{
-                require(path.resolve(modulesPath, "colors"));
+                requireDependency("colors");
             }catch(e){
                 hasColors = false;
             }
 
-            minimist = require(path.resolve(modulesPath, "minimist"));
+            minimist = requireDependency("minimist");
             cliArgs = minimist(process.argv.slice(2));
         },
         dump: function (obj){
@@ -88,7 +92,7 @@ var logger = (function(){
     return logger;
 })();
 
-module.exports = function(modulesPath, pluginId){
-    logger.init(modulesPath, pluginId);
+module.exports = function(projectPath, pluginId){
+    logger.init(projectPath, pluginId);
     return logger;
 };
